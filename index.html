@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Pagos de Obreros</title>
+</head>
+<body>
+    <h1>Cálculo de Pagos de Obreros</h1>
+    <div id="resultado"></div>
+
+    <script>
+        // Definición de las áreas y sus pagos
+        const areas = {
+            Produccion: { pagoHora: 5.8, bonificacion: 0.15 },
+            Envase: { pagoHora: 4.5, bonificacion: 0.12 },
+            Almacen: { pagoHora: 4.0, bonificacion: 0.10 }
+        };
+
+        // Función para calcular el pago de un obrero
+        function calcularPago(nombre, area, horasTrabajadas) {
+            const { pagoHora, bonificacion } = areas[area];
+            const basico = pagoHora * horasTrabajadas;
+            const bonificacionTotal = basico * bonificacion;
+            const totalBruto = basico + bonificacionTotal;
+            const descuentoESSALUD = basico * 0.06;
+            const pagoNeto = totalBruto - descuentoESSALUD;
+
+            return {
+                nombre,
+                area,
+                horasTrabajadas,
+                basico,
+                bonificacionTotal,
+                totalBruto,
+                descuentoESSALUD,
+                pagoNeto
+            };
+        }
+
+        // Arreglo de obreros
+        const obreros = [
+            { nombre: "Juan Pérez", area: "Produccion", horasTrabajadas: 160 },
+            { nombre: "María García", area: "Envase", horasTrabajadas: 150 },
+            { nombre: "Carlos López", area: "Almacen", horasTrabajadas: 170 },
+            { nombre: "Ana Martínez", area: "Produccion", horasTrabajadas: 165 },
+            { nombre: "Luis Rodríguez", area: "Envase", horasTrabajadas: 155 }
+        ];
+
+        // Calcular pagos y totales
+        let totalBasico = 0;
+        let totalBonificacion = 0;
+        let totalBruto = 0;
+        let totalDescuentoESSALUD = 0;
+        let totalPagoNeto = 0;
+
+        const resultados = obreros.map(obrero => {
+            const pago = calcularPago(obrero.nombre, obrero.area, obrero.horasTrabajadas);
+            
+            totalBasico += pago.basico;
+            totalBonificacion += pago.bonificacionTotal;
+            totalBruto += pago.totalBruto;
+            totalDescuentoESSALUD += pago.descuentoESSALUD;
+            totalPagoNeto += pago.pagoNeto;
+
+            return pago;
+        });
+
+        // Calcular importes de retiro
+        const importeSoles = totalPagoNeto;
+        const importeDolares = totalDescuentoESSALUD / 3.65;
+
+        // Generar tabla de resultados
+        let tablaHTML = `
+            <table border="1">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Área</th>
+                    <th>Horas</th>
+                    <th>Básico</th>
+                    <th>Bonificación</th>
+                    <th>Total Bruto</th>
+                    <th>Descuento ESSALUD</th>
+                    <th>Pago Neto</th>
+                </tr>
+        `;
+
+        resultados.forEach(r => {
+            tablaHTML += `
+                <tr>
+                    <td>${r.nombre}</td>
+                    <td>${r.area}</td>
+                    <td>${r.horasTrabajadas}</td>
+                    <td>${r.basico.toFixed(2)}</td>
+                    <td>${r.bonificacionTotal.toFixed(2)}</td>
+                    <td>${r.totalBruto.toFixed(2)}</td>
+                    <td>${r.descuentoESSALUD.toFixed(2)}</td>
+                    <td>${r.pagoNeto.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        tablaHTML += `
+            <tr>
+                <th colspan="3">Totales</th>
+                <th>${totalBasico.toFixed(2)}</th>
+                <th>${totalBonificacion.toFixed(2)}</th>
+                <th>${totalBruto.toFixed(2)}</th>
+                <th>${totalDescuentoESSALUD.toFixed(2)}</th>
+                <th>${totalPagoNeto.toFixed(2)}</th>
+            </tr>
+        </table>
+        <p>Importe a retirar de la cuenta en soles: S/ ${importeSoles.toFixed(2)}</p>
+        <p>Importe a retirar de la cuenta en dólares: $ ${importeDolares.toFixed(2)}</p>
+        `;
+
+        document.getElementById('resultado').innerHTML = tablaHTML;
+    </script>
+</body>
+</html>
